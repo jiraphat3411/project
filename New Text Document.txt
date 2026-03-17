@@ -1,0 +1,17 @@
+#https://github.com/senBedotcom/react-todo-list-demo
+
+git commit -m "initial commit"
+git push -u origin main
+
+git add .
+git commit -m "fix: edit"
+git push
+
+git fetch -p
+git pull
+git branch
+git checkout
+
+git add .
+git commit -m "update app"
+git push origin main

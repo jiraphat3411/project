@@ -31,7 +31,6 @@ async def predict(file: UploadFile = File(...)):
         fmax=8000
     )
     mel = librosa.power_to_db(mel, ref=np.max)
-
     mel = (mel - (-80.0)) / (0 - (-80.0))
     T = mel.shape[1]
     if T < 624:

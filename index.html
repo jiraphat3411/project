@@ -42,9 +42,9 @@ async function uploadAudio(){
     const formData = new FormData()
     formData.append("file", file)
 
-    const res = await fetch("http://localhost:8000/predict",{
-        method:"POST",
-        body:formData
+    const res = await fetch("/predict", {
+        method: "POST",
+        body: formData
     })
 
     const data = await res.json()

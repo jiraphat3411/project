@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Audio</title>
+</head>
+
+<body>
+
+<h2>Upload Audio</h2>
+
+<input type="file" id="audioFile" accept="audio/*">
+<br><br>
+
+<!-- <audio id="player" controls></audio>
+<br><br> -->
+
+<button onclick="uploadAudio()">Upload</button>
+
+<p id="result"></p>
+
+<script>
+
+let audioInput = document.getElementById("audioFile")
+<!-- let player = document.getElementById("player") -->
+
+audioInput.onchange = function(){
+    const file = audioInput.files[0]
+    if(file){
+        player.src = URL.createObjectURL(file)
+    }
+}
+
+async function uploadAudio(){
+
+    const file = audioInput.files[0]
+
+    if(!file){
+        alert("กรุณาเลือกไฟล์เสียง")
+        return
+    }
+
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const res = await fetch("http://localhost:8000/predict",{
+        method:"POST",
+        body:formData
+    })
+
+    const data = await res.json()
+
+    document.getElementById("result").innerText =
+        JSON.stringify(data)
+}
+
+</script>
+
+</body>
+</html>

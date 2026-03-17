@@ -47,7 +47,7 @@ async def predict(file: UploadFile = File(...)):
     pred = np.array(pred)[..., 0]
     pred = pred[:, :T]
     pred = pred * (0 - (-80.0)) + (-80.0)
-    # pred = librosa.db_to_power(pred, ref=1.0)
+    # pred = librosa.db_to_power(pred)
     # pred = librosa.feature.inverse.mel_to_audio(pred, 
     #     sr=16000, 
     #     n_fft=1024, 

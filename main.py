@@ -2,10 +2,17 @@ from fastapi import FastAPI, UploadFile, File
 import librosa
 import numpy as np
 import tensorflow as tf
+import torch
+from speechbrain.inference.vocoders import HIFIGAN
 
 app = FastAPI()
 
 model = tf.keras.models.load_model("model.keras")
+
+hifi_gan = HIFIGAN.from_hparams(
+    source="speechbrain/tts-hifigan-libritts-16kHz",
+    savedir="tmpdir"
+)
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
@@ -40,14 +47,18 @@ async def predict(file: UploadFile = File(...)):
     pred = np.array(pred)[..., 0]
     pred = pred[:, :T]
     pred = pred * (0 - (-80.0)) + (-80.0)
-    pred = librosa.db_to_power(pred, ref=1.0)
-    pred = librosa.feature.inverse.mel_to_audio(pred, 
-        sr=16000, 
-        n_fft=1024, 
-        hop_length=256, 
-        win_length=1024, 
-        fmax=8000, 
-        n_iter=100
-    )
+    # pred = librosa.db_to_power(pred, ref=1.0)
+    # pred = librosa.feature.inverse.mel_to_audio(pred, 
+    #     sr=16000, 
+    #     n_fft=1024, 
+    #     hop_length=256, 
+    #     win_length=1024, 
+    #     fmax=8000, 
+    #     n_iter=100
+    # )
+    pred = np.clip(pred / 10, -11.5, 2)
+    pred = torch.from_numpy(pred).float().unsqueeze(0)
+    pred = hifi_gan.decode_batch(pred)
+    pred = pred.squeeze().cpu().numpy()
 
     return {"prediction": pred.tolist()}
